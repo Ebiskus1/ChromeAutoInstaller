@@ -1,27 +1,3 @@
 @echo off
-echo Downloading Google Chrome installation file…
-setlocal EnableDelayedExpansion
-
-set DOWNLOAD_URL=https://dl.google.com/chrome/install/standalone/ChromeStandaloneSetup.exe
-set DOWNLOAD_FILE=%USERPROFILE%\Desktop\ChromeStandaloneSetup.exe
-
-powershell -command Invoke-WebRequest %DOWNLOAD_URL% -OutFile "%DOWNLOAD_FILE%"
-
-if NOT EXIST "%DOWNLOAD_FILE%" (
-echo Error downloading installation file.
-exit /b 1
-)
-
-echo Google Chrome installation file downloaded.
-
-echo Installing Google Chrome…
-set SILENT_SWITCHES=/install /silent /norestart
-
-start /wait "" "%DOWNLOAD_FILE%" %SILENT_SWITCHES%
-
-if %errorlevel% neq 0 (
-echo Error installing Google Chrome.
-exit /b 1
-)
-
-echo Google Chrome successfully installed.
+powershell "$userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36 Edg/114.0.1823.55'; $culture = [System.Globalization.CultureInfo]::CurrentCulture; $language = $culture.TwoLetterISOLanguageName; $ProgressPreference = 'SilentlyContinue'; $uri = 'https://dl.google.com/tag/s/appguid%%3D%%7B8A69D345-D564-463C-AFF1-A69D9E530F96%%7D%%26iid%%3D%%7B' + [guid]::NewGuid().ToString().ToUpper() + '%%7D%%26lang%%3D' + $language + '%%26browser%%3D4%%26usagestats%%3D0%%26appname%%3DGoogle%%2520Chrome%%26needsadmin%%3Dprefers%%26ap%%3Dx64-stable-statsdef_1%%26installdataindex%%3Dempty/chrome/install/ChromeStandaloneSetup64.exe'; $res = Invoke-WebRequest -UseBasicParsing -Method Head -useragent $userAgent -uri $uri; $StatusCode = $res.StatusCode; if ($StatusCode -eq 200) { $totalBytes = $res.Headers['Content-Length']; Write-Host -NoNewLine Downloading installer ($($totalBytes/1024.0/1024.0).ToString('#.##')) MB...; $res = Invoke-WebRequest -useragent $userAgent -uri $uri -OutFile chrome_installer.exe -PassThru; $res.RawContentStream.Position = 0; $downloadedBytes = 0; while ($downloadedBytes -lt $totalBytes) { Start-Sleep -Milliseconds 100; $downloadedBytes = $res.RawContentStream.Position; Write-Progress -Activity 'Downloading' -Status '$([math]::Round($downloadedBytes / $totalBytes * 100))% complete' -PercentComplete ($downloadedBytes / $totalBytes * 100) } }; Write-Host '    OK'"
+start "Installing Chrome" /wait chrome_installer.exe /silent /install
