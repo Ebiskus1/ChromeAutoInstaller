@@ -1,4 +1,27 @@
 @echo off
-powershell "$ie = New-Object -ComObject InternetExplorer.Application; $ie.Visible = $false; $ie.Navigate('about:blank'); while ($ie.Busy) { Start-Sleep -Milliseconds 100 }; $userAgent = $ie.Document.parentWindow.navigator.userAgent; $ie.Quit(); $culture = [System.Globalization.CultureInfo]::CurrentCulture; $language = $culture.TwoLetterISOLanguageName; $ProgressPreference = 'SilentlyContinue'; $uri = 'https://dl.google.com/tag/s/appguid%%3D%%7B8A69D345-D564-463C-AFF1-A69D9E530F96%%7D%%26iid%%3D%%7B' + [guid]::NewGuid().ToString().ToUpper() + '%%7D%%26lang%%3D' + $language + '%%26browser%%3D4%%26usagestats%%3D0%%26appname%%3DGoogle%%2520Chrome%%26needsadmin%%3Dprefers%%26ap%%3Dx64-stable-statsdef_1%%26installdataindex%%3Dempty/chrome/install/ChromeStandaloneSetup64.exe'; $res = Invoke-WebRequest -UseBasicParsing -Method Head -useragent $userAgent -uri $uri; $StatusCode = $res.StatusCode; if ($StatusCode -eq 200) { Write-Host -NoNewLine Downloading installer ($res.Headers['Content-Length']/1024.0/1024.0).ToString('#.##')  MB... }; Invoke-WebRequest -useragent $userAgent -uri $uri -OutFile chrome_installer.exe; Write-Host '    OK'"
-start "Installing Chrome" /wait chrome_installer.exe /silent /install
-del chrome_installer.exe
+echo Downloading Google Chrome installation file…
+setlocal EnableDelayedExpansion
+
+set DOWNLOAD_URL=https://dl.google.com/chrome/install/standalone/ChromeStandaloneSetup.exe
+set DOWNLOAD_FILE=%USERPROFILE%\Desktop\ChromeStandaloneSetup.exe
+
+powershell -command Invoke-WebRequest %DOWNLOAD_URL% -OutFile “%DOWNLOAD_FILE%”
+
+if NOT EXIST “%DOWNLOAD_FILE%” (
+echo Error downloading installation file.
+exit /b 1
+)
+
+echo Google Chrome installation file downloaded.
+
+echo Installing Google Chrome…
+set SILENT_SWITCHES=/install /silent /norestart
+
+start /wait “” “%DOWNLOAD_FILE%” %SILENT_SWITCHES%
+
+if %errorlevel% neq 0 (
+echo Error installing Google Chrome.
+exit /b 1
+)
+
+echo Google Chrome successfully installed.
