@@ -21,5 +21,3 @@ The script checks if Chrome is installed on your system. If Chrome is not instal
 A GUID (Globally Unique Identifier) is a unique identifier used to ensure that objects are globally unique. In the context of this script, the GUID is used in the iid URL parameter to download the Chrome installer from Google's servers. This parameter is used by Google servers to track Chrome installations and collect statistics.
 
 The script generates a new GUID each time it runs so that each Chrome installation has a unique identifier. This allows Google servers to track the number of Chrome installations and collect usage statistics.
-
-Translated with www.DeepL.com/Translator (free version)
